@@ -78,7 +78,6 @@ hand-block/
 ├── hand_sender.py                    # 손 인식 → UDP 전송 (Python)
 ├── Assets/
 │   ├── HandManager.cs                # 손 데이터 수신 및 블럭 조작 (Unity)
-│   ├── BlockRespawn.cs               # 블럭 리스폰 (각 블럭에 부착)
 │   └── Editor/
 │       └── BlockSetupWindow.cs       # Tools > Block Setup 에디터 도구
 └── docs/                             # README 이미지
@@ -88,7 +87,6 @@ hand-block/
 | --- | --- |
 | `hand_sender.py` | 웹캠 영상에서 MediaPipe로 최대 두 손을 인식합니다. 손목 좌표, 엄지·검지 거리로 판정한 핀치 여부, 손 기울기(roll·pitch·yaw)를 계산하고 좌표는 EMA로 스무딩한 뒤, 손마다 고정된 슬롯(손 0, 손 1)에 담아 UDP로 Unity에 보냅니다. |
 | `HandManager.cs` | 별도 스레드에서 UDP 데이터를 받습니다. 정규화 좌표를 카메라 기준 월드 좌표로 바꿔 커서를 움직이고, 핀치 시작 시 커서 근처 블럭(`Block` 태그)을 집습니다. 최근 프레임의 손 속도를 기록해 놓을 때 던지기 속도를 정하고, 회전 모드 버튼 UI를 만들어 켜져 있으면 손 기울기 변화만큼 집은 블럭을 회전시킵니다. 바닥 밖으로 떨어진 블럭은 시작 위치로 되돌립니다. |
-| `BlockRespawn.cs` | 각 블럭에 붙어 시작 위치를 저장하고, `Respawn` 태그 오브젝트에 닿으면 블럭을 시작 위치로 되돌립니다. |
 | `BlockSetupWindow.cs` | 가져온 블럭 모델을 게임에서 쓸 수 있는 블럭으로 일괄 변환하는 에디터 창입니다. |
 
 ## 에디터 도구

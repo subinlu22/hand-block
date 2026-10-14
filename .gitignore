@@ -6,7 +6,6 @@
 !/Assets/
 /Assets/*
 !/Assets/HandManager.cs
-!/Assets/BlockRespawn.cs
 !/Assets/Editor/
 /Assets/Editor/*
 !/Assets/Editor/BlockSetupWindow.cs
