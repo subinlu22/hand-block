@@ -1,6 +1,7 @@
 import cv2
 import mediapipe as mp
 import socket
+import math
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 sock.setblocking(False)
@@ -31,7 +32,7 @@ with mp_hands.Hands(max_num_hands=2) as hands:
         result = hands.process(rgb)
 
         # [왼손=0, 오른손=1] 항상 고정된 슬롯에 넣기
-        raw_hands = [(0.0, 0.0, False), (0.0, 0.0, False)]
+        raw_hands = [(0.0, 0.0, False, 0.0, 0.0, 0.0), (0.0, 0.0, False, 0.0, 0.0, 0.0)]
 
         if result.multi_hand_landmarks and result.multi_handedness:
             for hand, handedness in zip(result.multi_hand_landmarks, result.multi_handedness):
@@ -40,13 +41,18 @@ with mp_hands.Hands(max_num_hands=2) as hands:
                 x = wrist.x
                 y = wrist.y
                 pinch = is_pinch(hand)
+                # [회전 모드] 손 기울기 — roll: 엄지↔새끼 방향 각도, pitch/yaw: 손목→중지 뿌리 방향
+                roll  = math.atan2(hand.landmark[4].y - hand.landmark[17].y,
+                                   hand.landmark[4].x - hand.landmark[17].x)
+                pitch = hand.landmark[9].y - hand.landmark[0].y
+                yaw   = hand.landmark[9].x - hand.landmark[0].x
                 label = handedness.classification[0].label
                 slot = 0 if label == "Right" else 1
-                raw_hands[slot] = (x, y, pinch)
+                raw_hands[slot] = (x, y, pinch, roll, pitch, yaw)
 
         hand_data = []
         for i in range(2):
-            x, y, pinch = raw_hands[i]
+            x, y, pinch, roll, pitch, yaw = raw_hands[i]
 
             # EMA 스무딩 적용 — 손이 없으면 초기화, 있으면 이전 위치와 혼합
             if x == 0.0 and y == 0.0:
@@ -60,7 +66,7 @@ with mp_hands.Hands(max_num_hands=2) as hands:
                 x, y = smoothed_pos[i][0], smoothed_pos[i][1]
 
             grab = 1 if pinch else 0
-            hand_data.append(f"{x},{y},{grab}")
+            hand_data.append(f"{x},{y},{grab},{roll:.4f},{pitch:.4f},{yaw:.4f}")
 
         message = "|".join(hand_data)
         try:
