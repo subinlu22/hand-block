@@ -1,0 +1,11 @@
+# 이 레포에는 스크립트만 올립니다 (모델·텍스처·씬 등 에셋은 올리지 않음)
+# 새 스크립트를 올리려면 아래에 "!/Assets/파일이름.cs" 처럼 한 줄 추가하세요.
+/*
+!/.gitignore
+!/hand_sender.py
+!/Assets/
+/Assets/*
+!/Assets/HandManager.cs
+!/Assets/Editor/
+/Assets/Editor/*
+!/Assets/Editor/BlockSetupWindow.cs
